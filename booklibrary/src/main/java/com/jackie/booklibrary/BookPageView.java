@@ -4,10 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Region;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -46,7 +48,8 @@ public class BookPageView extends View{
     public static final String STYLE_LOWER_RIGHT = "STYLE_LOWER_RIGHT";//f点在右下角
     private Scroller scroller;
     private String style;
-
+    private Paint textPaint;//绘制文字画笔
+    private Paint pathCContentPaint;//绘制C区域内容画笔
     public BookPageView(Context context) {
         super(context);
         init(context);
@@ -102,8 +105,19 @@ public class BookPageView extends View{
         mBPaint = new Paint();
         mBPaint.setColor(Color.BLUE);
         mBPaint.setAntiAlias(true);//设置抗锯齿
-        mBPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP)); //在最底层
+//        mBPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP)); //在最底层
         mBPath = new Path();
+
+        //文本textPaint初始化
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setSubpixelText(true);//设置自像素。如果该项为true，将有助于文本在LCD屏幕上的显示效果。
+        textPaint.setTextSize(30);
+
+        pathCContentPaint = new Paint();
+        pathCContentPaint.setColor(Color.YELLOW);
+        pathCContentPaint.setAntiAlias(true);//设置抗锯齿
 
         scroller = new Scroller(context,new LinearInterpolator());  //以常量速率滑动即可
 
@@ -173,23 +187,103 @@ public class BookPageView extends View{
         bitmap = Bitmap.createBitmap((int)viewWidth,(int)viewHeight, Bitmap.Config.ARGB_8888);
         bitmapCanvas = new Canvas(bitmap);
         if (a.x == -1 && a.y == -1){
-            bitmapCanvas.drawPath(getPathDefault(),mAPaint);
+//            bitmapCanvas.drawPath(getPathDefault(),mAPaint);
+            drawPathAContent(bitmapCanvas,getPathDefault(),mAPaint);
         }else {
             if (f.x == viewWidth && f.y == 0) {
-                bitmapCanvas.drawPath(getPathAFromTopRight(), mAPaint);
+//                bitmapCanvas.drawPath(getPathAFromTopRight(), mAPaint);
+                drawPathAContent(bitmapCanvas,getPathAFromTopRight(),mAPaint);
+                bitmapCanvas.drawPath(getPathC(),mCPaint);
+                drawPathCContent(bitmapCanvas,getPathAFromTopRight(),pathCContentPaint);
+                drawPathBContent(bitmapCanvas,getPathAFromTopRight(),mBPaint);
             }else if (f.x == viewWidth && f.y == viewHeight){
-                bitmapCanvas.drawPath(getPathAFromLowerRight(),mAPaint);
+//                bitmapCanvas.drawPath(getPathAFromLowerRight(),mAPaint);
+                drawPathAContent(bitmapCanvas,getPathAFromLowerRight(),mAPaint);
+                bitmapCanvas.drawPath(getPathC(),mCPaint);
+                drawPathCContent(bitmapCanvas,getPathAFromTopRight(),pathCContentPaint);
+                drawPathBContent(bitmapCanvas,getPathAFromLowerRight(),mBPaint);
             }
-            bitmapCanvas.drawPath(getPathC(),mCPaint);
-            bitmapCanvas.drawPath(getPathB(),mBPaint);
+//            bitmapCanvas.drawPath(getPathC(),mCPaint);
+//            bitmapCanvas.drawPath(getPathB(),mBPaint);
         }
         canvas.drawBitmap(bitmap,0,0,null);
 
 //        //绘制基本点
         drawMyPointAndBackGround(canvas);
     }
+    /**
+     * 绘制C区域内容
+     * @param canvas
+     * @param pathA
+     * @param pathPaint
+     */
+    private void drawPathCContent(Canvas canvas, Path pathA, Paint pathPaint){
+        Bitmap contentBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.RGB_565);
+        Canvas contentCanvas = new Canvas(contentBitmap);
 
+        //下面开始绘制区域内的内容...
+        contentCanvas.drawPath(getPathB(),pathPaint);//绘制一个背景，path用B的就行
+        contentCanvas.drawText("这是在A区域的内容...AAAA", viewWidth-260, viewHeight-100, textPaint);
 
+        //结束绘制区域内的内容...
+
+        canvas.save();
+        canvas.clipPath(pathA);
+//        canvas.clipPath(getPathC(), Region.Op.REVERSE_DIFFERENCE);//裁剪出C区域不同于A区域的部分
+        canvas.clipPath(getPathC(),Region.Op.UNION);//裁剪出A和C区域的全集
+        canvas.clipPath(getPathC(), Region.Op.INTERSECT);//取与C区域的交集
+
+        float eh = (float) Math.hypot(f.x - e.x,h.y - f.y);
+        float sin0 = (f.x - e.x) / eh;
+        float cos0 = (h.y - f.y) / eh;
+        //设置翻转和旋转矩阵
+        float[] mMatrixArray = { 0, 0, 0, 0, 0, 0, 0, 0, 1.0f };
+        mMatrixArray[0] = -(1-2 * sin0 * sin0);
+        mMatrixArray[1] = 2 * sin0 * cos0;
+        mMatrixArray[3] = 2 * sin0 * cos0;
+        mMatrixArray[4] = 1 - 2 * sin0 * sin0;
+
+        Matrix mMatrix = new Matrix();
+        mMatrix.reset();
+        mMatrix.setValues(mMatrixArray);//翻转和旋转
+        mMatrix.preTranslate(-e.x, -e.y);//沿当前XY轴负方向位移得到 矩形A₃B₃C₃D₃
+        mMatrix.postTranslate(e.x, e.y);//沿原XY轴方向位移得到 矩形A4 B4 C4 D4
+
+        canvas.drawBitmap(contentBitmap, mMatrix, null);
+        canvas.restore();
+    }
+
+    /**
+     * 绘制A区域内容
+     * @param canvas
+     * @param pathA
+     * @param pathPaint
+     */
+   private void drawPathAContent(Canvas canvas,Path pathA,Paint pathPaint){
+       Bitmap contentBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.RGB_565);
+       Canvas contentCanvas = new Canvas(contentBitmap);
+       contentCanvas.drawPath(pathA,pathPaint);
+       contentCanvas.drawText("这是在A区域的内容...AAAA", viewWidth-260, viewHeight-100, textPaint);
+
+       canvas.save();
+       canvas.clipPath(pathA, Region.Op.INTERSECT);
+       canvas.drawBitmap(contentBitmap,0,0,null);
+       canvas.restore();
+   }
+
+   private void drawPathBContent(Canvas canvas,Path pathA,Paint pathPaint){
+       Bitmap contentBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.RGB_565);
+       Canvas contentCanvas = new Canvas(contentBitmap);
+       contentCanvas.drawPath(getPathB(),pathPaint);
+       contentCanvas.drawText("这是在B区域的内容...AAAA", viewWidth-260, viewHeight-100, textPaint);
+
+       canvas.save();
+       canvas.clipPath(pathA);
+       canvas.clipPath(getPathC(),Region.Op.UNION);  //裁剪出A和C区域的全集
+       canvas.clipPath(getPathB(),Region.Op.REVERSE_DIFFERENCE); //裁剪出B区域中不同于AC区域的部分
+       canvas.drawBitmap(contentBitmap,0,0,null);
+       canvas.restore();
+   }
 
 
     /**
