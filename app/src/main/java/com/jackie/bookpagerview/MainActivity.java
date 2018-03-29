@@ -6,14 +6,19 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.jackie.booklibrary.BookPageView;
+import com.jackie.booklibrary.uitls.AnnotateUtils;
+import com.jackie.booklibrary.uitls.ViewInject;
 
 public class MainActivity extends AppCompatActivity {
+    @ViewInject(R.id.view_book_page)
     private BookPageView bookPageView;
+//    private BookPageView bookPageView;
     private String style;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AnnotateUtils.injectViews(this,getWindow().getDecorView());
         bookPageView = (BookPageView) findViewById(R.id.view_book_page);
         bookPageView.setOnTouchListener(new View.OnTouchListener() {
             @Override
