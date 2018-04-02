@@ -3,6 +3,7 @@ package com.jackie.bookpagerview.camera;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,29 +28,34 @@ import java.util.List;
  */
 
 public class CameraGridView extends BaseActivity{
+    private static final String TAG = "CameraGridView";
     @ViewInject(R.id.gridview)
     GridView gridview;
-    private List<String> mListPath;
+    private List<ImageBean> mListPath;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_gridview);
         AnnotateUtils.injectViews(this,getWindow().getDecorView());
         mListPath = new ArrayList<>();
-        for (int i = 0;i < 20;i++){
-            mListPath.add("123"+i);
-        }
-        MyGridAdapter adapter = new MyGridAdapter(this,mListPath);
-        gridview.setAdapter(adapter);
+        PhotoUtils.loadImageForSDCard(this, new PhotoUtils.DataCallback() {
+            @Override
+            public void onSuccess(ArrayList<Folder> folders) {
+                Log.i(TAG, "onSuccess: "+folders.get(0).getImages().size());
+                MyGridAdapter adapter = new MyGridAdapter(CameraGridView.this,folders.get(0).getImages());
+                gridview.setAdapter(adapter);
+            }
+        });
+
 
     }
 
 
     private class MyGridAdapter extends BaseAdapter{
         private LayoutInflater inflater;
-        private List<String> mList;
+        private List<ImageBean> mList;
         private Context context;
-        public MyGridAdapter(Context context, List<String> mList){
+        public MyGridAdapter(Context context, List<ImageBean> mList){
             inflater = LayoutInflater.from(context);
             this.mList = mList;
             this.context = context;
