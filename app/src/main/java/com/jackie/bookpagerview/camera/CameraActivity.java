@@ -12,13 +12,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridView;
 
 import com.jackie.booklibrary.uitls.AnnotateUtils;
 import com.jackie.booklibrary.uitls.ViewInject;
 import com.jackie.bookpagerview.BaseActivity;
 import com.jackie.bookpagerview.R;
+import com.jackie.bookpagerview.adapter.MyGridAdapter;
+import com.jackie.bookpagerview.adapter.ShowGridAdapter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,19 +32,26 @@ import java.util.List;
 public class CameraActivity extends BaseActivity {
     private static int CHOOSE_PHOTO = 66;
     private static int TAKE_PHOTO = 88;
+    private static int RESULT_GRID = 100;
+    private ArrayList<ImageBean> imageBeanArrayList;
     private static final String TAG = "CameraActivity";
     private File chooseFile;
     @ViewInject(R.id.start_camera)
     Button start_camera;
     @ViewInject(R.id.pick_photo)
     Button pick_photo;
+    @ViewInject(R.id.main_grid)
+    GridView main_grid;
+    ShowGridAdapter myGridAdapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         AnnotateUtils.injectViews(this,getWindow().getDecorView());
-
-
+        imageBeanArrayList = new ArrayList<>();
+        imageBeanArrayList.add(new ImageBean("error",4564,""));
+        myGridAdapter = new ShowGridAdapter(this,imageBeanArrayList);
+        main_grid.setAdapter(myGridAdapter);
         start_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,10 +62,11 @@ public class CameraActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CameraActivity.this,CameraGridView.class);
-                startActivity(intent);
+                CameraActivity.this.startActivityForResult(intent,1000);
             }
         });
     }
+
 
 
 
@@ -100,6 +112,16 @@ public class CameraActivity extends BaseActivity {
          //选择拍照
         }else if (requestCode == TAKE_PHOTO){
 
+        }
+        Log.i(TAG, "onActivityResult: -----------fuck---------requestCode:"+requestCode+"---resultCode:"+resultCode);
+        //用于gridview初始化内容
+        if (requestCode == 1000){
+            Bundle bundle = data.getExtras();
+            Log.i(TAG, "onActivityResult: -----------100-----------"+bundle);
+            imageBeanArrayList.remove(imageBeanArrayList.size()-1);  //每次都先移除最后一个再添加，因为最后一个是加号
+            imageBeanArrayList.addAll((ArrayList<ImageBean>)bundle.getSerializable("gridlist"));
+            imageBeanArrayList.add(new ImageBean("error",4564,""));
+            myGridAdapter.notifyDataSetChanged();
         }
 
 

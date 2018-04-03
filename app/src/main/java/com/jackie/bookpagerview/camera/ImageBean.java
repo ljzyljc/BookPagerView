@@ -1,10 +1,12 @@
 package com.jackie.bookpagerview.camera;
 
+import java.io.Serializable;
+
 /**
  * Created by Jackie on 2018/4/2.
  */
 
-public class ImageBean {
+public class ImageBean implements Serializable{
     private String path;
     private long time;
     private String name;

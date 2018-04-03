@@ -14,4 +14,12 @@
         android:text="图片选择器"
         android:id="@+id/pick_photo"
         />
+    <GridView
+        android:id="@+id/main_grid"
+        android:numColumns="4"
+        android:horizontalSpacing="5dp"
+        android:verticalSpacing="5dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></GridView>
 </LinearLayout>

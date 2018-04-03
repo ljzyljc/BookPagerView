@@ -73,6 +73,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".camera.CameraGridView"/>
+        <activity android:name=".camera.CameraViewPagerActivity"/>
     </application>
 
 </manifest>
