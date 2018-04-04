@@ -272,6 +272,13 @@ public class DragGridView extends GridView {
         mWindowParams.x = moveX - mPoint2ItemTop + mOffset2Left;
         mWindowParams.y = moveY - mPoint2ItemTop + mOffset2Top - statusHeight;
         mWindowManager.updateViewLayout(mDragImageView,mWindowParams);   //更新镜像的位置
+        if (onChangeListener!=null){
+            onChangeListener.onShowDeleteButttom();  //显示底部删除的按钮
+            if (mWindowParams.y > 300){   //超过300的高度，就删除
+                onChangeListener.onDelete(mDragPosition);
+            }
+
+        }
         onSwapItem(moveX,moveY);
         //GridView自动滚动
         mHandler.post(mScrollRunnable);
@@ -355,6 +362,8 @@ public class DragGridView extends GridView {
 
         boolean onChange(int from,int to);
         void onAfterChange();
+        void onShowDeleteButttom();  //显示删除的按钮
+        void onDelete(int position);             //删除
 
     }
     /**

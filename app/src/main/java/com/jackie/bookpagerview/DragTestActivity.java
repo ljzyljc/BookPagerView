@@ -2,10 +2,16 @@ package com.jackie.bookpagerview;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.PopupWindow;
 
 import com.jackie.booklibrary.uitls.AnnotateUtils;
 import com.jackie.booklibrary.uitls.ViewInject;
@@ -76,17 +82,50 @@ public class DragTestActivity extends BaseActivity {
                     }
                 }
                 dragAdapter.notifyDataSetChanged();
-
                 return false;
             }
 
             @Override
             public void onAfterChange() {
                 dragAdapter.notifyDataSetChanged();
+                if (popWindow != null) {
+                    popWindow.dismiss();
+                }
+            }
+
+            @Override
+            public void onShowDeleteButttom() {
+                if (popWindow == null || !popWindow.isShowing()) {
+                    showPopwindow();
+                }
+            }
+
+            @Override
+            public void onDelete(int position) {
+                if (popWindow != null) {
+                    popWindow.dismiss();
+                }
             }
         });
 
 
+    }
+    PopupWindow popWindow;
+    private void showPopwindow() {
+        View parent = ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
+        View popView = View.inflate(this, R.layout.activity_popup, null);
+        Button btnCancel = (Button) popView.findViewById(R.id.btn_camera_pop_cancel);
+
+        int width = getResources().getDisplayMetrics().widthPixels;
+        int height = getResources().getDisplayMetrics().heightPixels;
+
+        popWindow = new PopupWindow(popView,width,height);
+//        popWindow.setAnimationStyle(R.style.AnimBottom);
+        popWindow.setFocusable(false);
+        popWindow.setOutsideTouchable(false);// 设置同意在外点击消失
+        ColorDrawable dw = new ColorDrawable(0x30000000);
+        popWindow.setBackgroundDrawable(dw);
+        popWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
     }
 
     @Override
