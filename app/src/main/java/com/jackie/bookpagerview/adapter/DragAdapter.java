@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class DragAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
-        return mList == null ? 0 : 10;
+        return mList == null ? 0 : mList.size()+1;
     }
 
     @Override
@@ -62,26 +63,32 @@ public class DragAdapter extends BaseAdapter{
         }else{
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Glide.with(context).load(new File(mList.get(position).getPath())).diskCacheStrategy(DiskCacheStrategy.ALL).error(R.mipmap.personal_add).into(viewHolder.imageview);
-//        viewHolder.imageview.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //如果是点击了最后一个，即加号
-//                if (position == mList.size()-1){
-//                    Intent intent = new Intent(context,CameraGridView.class);
-//                    ((Activity)context).startActivityForResult(intent,1000);
-//                    return;
-//                }
-//                Intent intent = new Intent(context,CameraViewPagerActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("list",mList);
-//                bundle.putString("position", String.valueOf(position));
-//                intent.putExtras(bundle);
-//                context.startActivity(intent);
-//            }
-//        });
+        if (position == mList.size()){  //最后一个为加号，在总大小为mlist.size+1
+            Glide.with(context).load("").error(R.mipmap.personal_add).into(viewHolder.imageview);
+        }else {
+            Glide.with(context).load(new File(mList.get(position).getPath())).diskCacheStrategy(DiskCacheStrategy.ALL).error(R.mipmap.personal_add).into(viewHolder.imageview);
+        viewHolder.imageview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "onClick: ----------------加号-----");
+                Log.i(TAG, "onClick: -----"+position+"--"+mList.size());
+                //如果是点击了最后一个，即加号
+                if (position == mList.size()){
+                    Intent intent = new Intent(context,CameraGridView.class);
+                    ((Activity)context).startActivityForResult(intent,1000);
+                    return;
+                }
+                Intent intent = new Intent(context,CameraViewPagerActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("list",mList);
+                bundle.putString("position", String.valueOf(position));
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
+        }
+        viewHolder.imageview.setVisibility(View.VISIBLE);
         viewHolder.checkBox.setVisibility(View.GONE);
-
         return convertView;
     }
 

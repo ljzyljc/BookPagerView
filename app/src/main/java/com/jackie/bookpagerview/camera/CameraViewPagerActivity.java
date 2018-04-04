@@ -55,8 +55,7 @@ public class CameraViewPagerActivity extends BaseActivity {
         }
         @Override
         public int getCount() {
-            //此处移除掉最后一个是为了不加载那个加号
-            return imageBeanList == null ? 0 : imageBeanList.size()-1;
+            return imageBeanList == null ? 0 : imageBeanList.size();
         }
 
         @Override
