@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--位置-->
+    <attr name="position">
+        <enum name="left_top" value="0"/>
+        <enum name="left_bottom" value="1"/>
+        <enum name="right_top" value="2"/>
+        <enum name="right_bottom" value="3"/>
+    </attr>
+    <attr name="staellite_radius" format="dimension"/>
+    <declare-styleable name="SatelliteMenu">
+        <attr name="position"/>
+        <attr name="staellite_radius"/>
+    </declare-styleable>
+</resources>

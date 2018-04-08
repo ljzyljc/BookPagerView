@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:jackie="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<com.jackie.bookpagerview.view.SatelliteMenu
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    jackie:position="left_bottom"
+    jackie:staellite_radius="130dp">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:background="@mipmap/composer_button"
+        android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/id_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/composer_icn_plus"
+        />
+</RelativeLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/composer_music"
+        android:tag="Camera"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/composer_place"
+        android:tag="Place"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/composer_sleep"
+        android:tag="Sleep"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/composer_thought"
+        android:tag="Sun"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/composer_with"
+        android:tag="People"
+        />
+    </com.jackie.bookpagerview.view.SatelliteMenu>
+</LinearLayout>
