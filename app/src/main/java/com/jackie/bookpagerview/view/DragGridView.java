@@ -76,6 +76,7 @@ public class DragGridView extends GridView {
      * DragGridView自动滚动的速度
      */
     private static final int speed = 20;
+    private int mScreemHeight;
     public DragGridView(Context context) {
         super(context);
         init(context);
@@ -96,13 +97,14 @@ public class DragGridView extends GridView {
         mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         statusHeight = getStatusHeight(context);
+        mScreemHeight = mWindowManager.getDefaultDisplay().getHeight();
     }
     //用来处理是否为长按的Runnable
     private Runnable mLongClickRunnable = new Runnable() {
         @Override
         public void run() {
             isDrag = true;
-            mVibrator.vibrate(50);  //震动50毫秒
+            mVibrator.vibrate(0);  //震动50毫秒
             mStartDragItemView.setVisibility(INVISIBLE);
             createDragImg(mDragBitmap,mDownX,mDownY);
         }
@@ -266,16 +268,19 @@ public class DragGridView extends GridView {
 
     }
 
-
+//    private boolean isCanDelete;
     //拖动item,更新镜像
     private void onDragItem(int moveX,int moveY){
         mWindowParams.x = moveX - mPoint2ItemTop + mOffset2Left;
         mWindowParams.y = moveY - mPoint2ItemTop + mOffset2Top - statusHeight;
         mWindowManager.updateViewLayout(mDragImageView,mWindowParams);   //更新镜像的位置
         if (onChangeListener!=null){
+            Log.i(TAG, "onDragItem: -------"+mWindowParams.y+"-----"+mScreemHeight/8 * 6);
             onChangeListener.onShowDeleteButttom();  //显示底部删除的按钮
-            if (mWindowParams.y > 300){   //超过300的高度，就删除
-                onChangeListener.onDelete(mDragPosition);
+            if (mWindowParams.y > mScreemHeight/8 * 6){   //超过300的高度，就删除
+                onChangeListener.aboveDeleteButton(true);
+            }else{
+                onChangeListener.aboveDeleteButton(false);
             }
 
         }
@@ -298,6 +303,12 @@ public class DragGridView extends GridView {
         }
         if (onChangeListener != null){
             onChangeListener.onAfterChange();
+        }
+        //此处就是为了设置拖动删除
+        if (mWindowParams.y > mScreemHeight/8 * 6){
+            if (onChangeListener!=null){
+                onChangeListener.onDelete(mDragPosition);
+            }
         }
 
     }
@@ -364,6 +375,7 @@ public class DragGridView extends GridView {
         void onAfterChange();
         void onShowDeleteButttom();  //显示删除的按钮
         void onDelete(int position);             //删除
+        void aboveDeleteButton(boolean flag);  //拖拽的item在删除按钮之上
 
     }
     /**

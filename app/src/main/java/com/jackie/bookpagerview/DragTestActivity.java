@@ -1,14 +1,17 @@
 package com.jackie.bookpagerview;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.PopupWindow;
@@ -66,6 +69,7 @@ public class DragTestActivity extends BaseActivity {
 //            }
 //        });
         drag_grid.setOnChangeListener(new DragGridView.OnChangeListener() {
+            //交换顺序
             @Override
             public boolean onChange(int from, int to) {
                 if (from == arrayList.size() || to == arrayList.size()){
@@ -84,7 +88,7 @@ public class DragTestActivity extends BaseActivity {
                 dragAdapter.notifyDataSetChanged();
                 return false;
             }
-
+            //调整完位置之后
             @Override
             public void onAfterChange() {
                 dragAdapter.notifyDataSetChanged();
@@ -92,18 +96,32 @@ public class DragTestActivity extends BaseActivity {
                     popWindow.dismiss();
                 }
             }
-
+            //拖动的时候显示删除按钮
             @Override
             public void onShowDeleteButttom() {
                 if (popWindow == null || !popWindow.isShowing()) {
                     showPopwindow();
                 }
             }
-
+            //删除后
             @Override
             public void onDelete(int position) {
                 if (popWindow != null) {
                     popWindow.dismiss();
+                }
+                Log.i(TAG, "onDelete: ----------"+position);
+                arrayList.remove(position);
+                dragAdapter.notifyDataSetChanged();
+            }
+            //是否在删除按钮上面，用于改变popupwindow的文字
+            @Override
+            public void aboveDeleteButton(boolean flag) {
+                if (popWindow!=null){
+                    if (flag){
+                        btn_camera_pop_cancel.setText("松开即可删除");
+                    }else{
+                        btn_camera_pop_cancel.setText("拖动到此处删除");
+                    }
                 }
             }
         });
@@ -111,21 +129,22 @@ public class DragTestActivity extends BaseActivity {
 
     }
     PopupWindow popWindow;
+    private Button btn_camera_pop_cancel;
     private void showPopwindow() {
-        View parent = ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
-        View popView = View.inflate(this, R.layout.activity_popup, null);
-        Button btnCancel = (Button) popView.findViewById(R.id.btn_camera_pop_cancel);
-
-        int width = getResources().getDisplayMetrics().widthPixels;
-        int height = getResources().getDisplayMetrics().heightPixels;
-
+//        View parent = this.findViewById(R.id.linear_main);
+        View popView = LayoutInflater.from(DragTestActivity.this).inflate(R.layout.activity_popup, null);
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        int width = wm.getDefaultDisplay().getWidth();
+        int height = wm.getDefaultDisplay().getHeight();
+        btn_camera_pop_cancel = (Button) popView.findViewById(R.id.btn_camera_pop_cancel);
         popWindow = new PopupWindow(popView,width,height);
-//        popWindow.setAnimationStyle(R.style.AnimBottom);
         popWindow.setFocusable(false);
         popWindow.setOutsideTouchable(false);// 设置同意在外点击消失
-        ColorDrawable dw = new ColorDrawable(0x30000000);
-        popWindow.setBackgroundDrawable(dw);
-        popWindow.showAtLocation(parent, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
+        popWindow.setHeight(height/8);
+//        ColorDrawable dw = new ColorDrawable(0x30000000);
+//        popWindow.setBackgroundDrawable(dw);
+
+        popWindow.showAtLocation(this.findViewById(R.id.linear_main), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
     }
 
     @Override
