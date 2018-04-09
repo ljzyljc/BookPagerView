@@ -18,7 +18,7 @@ import java.util.List;
  * Created by Jackie on 2018/4/9.
  */
 
-public class MagicBezierCircle extends View {
+public class MagicNewBezierCircle extends View {
 
     private float blackMagic = 0.551915024494f;
     private int mWidth;
@@ -34,17 +34,17 @@ public class MagicBezierCircle extends View {
     private List<PointF> mPointControlls;//放置8个控制点的集合
 
 
-    public MagicBezierCircle(Context context) {
+    public MagicNewBezierCircle(Context context) {
         super(context);
         init();
     }
 
-    public MagicBezierCircle(Context context, @Nullable AttributeSet attrs) {
+    public MagicNewBezierCircle(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public MagicBezierCircle(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public MagicNewBezierCircle(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -74,16 +74,20 @@ public class MagicBezierCircle extends View {
         mPointDatas = new ArrayList<>();
         mPointControlls = new ArrayList<>();
 
-        mPointDatas.add(new PointF(mCenterX, mCenterY - mRadious));
-        mPointDatas.add(new PointF(mCenterX + mRadious, mCenterY));
-        mPointDatas.add(new PointF(mCenterX, mCenterY + mRadious));
-        mPointDatas.add(new PointF(mCenterX - mRadious, mCenterY));
+        mPointDatas.add(new PointF(mCenterX, mCenterY - mRadious));    //上
+        mPointDatas.add(new PointF(mCenterX+mRadious/2, mCenterY - mRadious/2));    //东北
+        mPointDatas.add(new PointF(mCenterX + mRadious, mCenterY));    //右
+        mPointDatas.add(new PointF(mCenterX+mRadious/2, mCenterY + mRadious/2));    //东南
+        mPointDatas.add(new PointF(mCenterX, mCenterY + mRadious));    //下
+        mPointDatas.add(new PointF(mCenterX-mRadious/2, mCenterY + mRadious/2));    //西南
+        mPointDatas.add(new PointF(mCenterX - mRadious, mCenterY));    //左
+        mPointDatas.add(new PointF(mCenterX-mRadious/2, mCenterY - mRadious/2));    //西北
 
         mPointControlls.add(new PointF(mCenterX + mMagicDistance, mCenterY - mRadious));   //顶部右侧最高点
         mPointControlls.add(new PointF(mCenterX + mRadious, mCenterY - mMagicDistance));   //顶部右侧第二高的点
 
-        mPointControlls.add(new PointF(mCenterX + mRadious, mCenterY + mMagicDistance));
-        mPointControlls.add(new PointF(mCenterX + mMagicDistance, mCenterY + mRadious));
+        mPointControlls.add(new PointF(mCenterX + mRadious, mCenterY + mMagicDistance));   //东南侧较高点
+        mPointControlls.add(new PointF(mCenterX + mMagicDistance, mCenterY + mRadious));   //东南侧较低点
 
         mPointControlls.add(new PointF(mCenterX - mMagicDistance, mCenterY + mRadious));  //西南侧较低点
         mPointControlls.add(new PointF(mCenterX - mRadious, mCenterY + mMagicDistance));  //西南侧较高点
@@ -122,13 +126,13 @@ public class MagicBezierCircle extends View {
 
         mCurrTime += 20;
         //A弹出
-        if (mCurrTime <= mDuration/34*7){   //0-75
+        if (mCurrTime <= mDuration/6){   //0-50
             mPointDatas.get(0).y -= aTop/mCount;
 
             mPointControlls.get(0).x += aTotal/mCount;
             postInvalidateDelayed((long) mPiece);
             Log.i(TAG, "onDraw: -----1----"+mCurrTime+"-------"+mDuration);
-        }else if (mCurrTime> mDuration/6 && mCurrTime <= mDuration/3){    //50-100   A收回
+        }else if (mCurrTime> mDuration/6 && mCurrTime <= mDuration/3){    //50-100   A弹出，B弹出
             mPointDatas.get(0).y -= aTop/mCount;
             mPointControlls.get(0).x += aTotal/mCount;
 
@@ -138,8 +142,8 @@ public class MagicBezierCircle extends View {
 
                 postInvalidateDelayed((long) mPiece);
         }else if (mCurrTime> mDuration/3 && mCurrTime <= mDuration/2){    //100-150  A收回，B弹出，C弹出
-            mPointDatas.get(0).y += aTop/mCount;
-            mPointControlls.get(0).x -= aTotal/mCount;
+            mPointDatas.get(0).y += aTop/mCount*3;
+            mPointControlls.get(0).x -= aTotal/mCount*3;
 
             mPointDatas.get(3).x -= lTop/mCount;
 
@@ -151,28 +155,28 @@ public class MagicBezierCircle extends View {
 
             postInvalidateDelayed((long) mPiece);
         }else if (mCurrTime> mDuration/2 && mCurrTime <= mDuration/3 * 2){ //150-200 A收回，B收回，C弹出
-            mPointDatas.get(0).y += aTop/mCount;
-            mPointControlls.get(0).x -= aTotal/mCount;
+            mPointDatas.get(0).y -= aTop/mCount;
+            mPointControlls.get(0).x += aTotal/mCount;
 
             mPointDatas.get(3).x -= lTop/mCount;
 
             mPointControlls.get(5).y += cBottom/mCount;
             //B
-            mPointControlls.get(6).y += bTotal/mCount;
-            mPointControlls.get(7).x += bTotal/mCount;
+            mPointControlls.get(6).y += bTotal/mCount*3;
+            mPointControlls.get(7).x += bTotal/mCount*3;
 
             postInvalidateDelayed((long) mPiece);
         }else if (mCurrTime> mDuration/3 * 2 && mCurrTime <= mDuration/6 * 5) { //200-250 B收回，C收回
-            mPointDatas.get(3).x += lTop/mCount;
+            mPointDatas.get(3).x += lTop/mCount*3;
 
-            mPointControlls.get(5).y -= cBottom/mCount;
+            mPointControlls.get(5).y -= cBottom/mCount*3;
             //B
-            mPointControlls.get(6).y += bTotal/mCount;
-            mPointControlls.get(7).x += bTotal/mCount;
+            mPointControlls.get(6).y -= bTotal/mCount;
+            mPointControlls.get(7).x -= bTotal/mCount;
             postInvalidateDelayed((long) mPiece);
         }else if (mCurrTime> mDuration/6 * 5 && mCurrTime <= mDuration){        //250-300 C收回
-            mPointDatas.get(3).x += lTop/mCount;
-            mPointControlls.get(5).y -= cBottom/mCount;
+            mPointDatas.get(3).x -= lTop/mCount;
+            mPointControlls.get(5).y += cBottom/mCount;
             postInvalidateDelayed((long) mPiece);
         }else{
             //最后修正值，因为每次除存在误差
