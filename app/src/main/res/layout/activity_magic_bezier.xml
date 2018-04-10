@@ -14,18 +14,24 @@
         android:layout_height="match_parent"
         jackie:position="left_bottom"
         jackie:staellite_radius="130dp">
-        <LinearLayout
+        <RelativeLayout
 
             android:layout_width="wrap_content"
             android:gravity="right|bottom"
+
             android:layout_height="wrap_content">
             <com.jackie.bookpagerview.view.MagicBezierCircle
                 android:id="@+id/bezier"
                 android:layout_gravity="bottom|right"
                 android:layout_width="100dp"
                 android:layout_height="100dp" />
-
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/img"
+                android:layout_centerInParent="true"
+                android:background="@mipmap/add_menu1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
         <!--<RelativeLayout-->
             <!--android:layout_width="wrap_content"-->
             <!--android:background="@mipmap/composer_button"-->

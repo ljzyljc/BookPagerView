@@ -155,7 +155,11 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         //主按钮旋转
-//        rotateCButton(v,0f,360f,600);
+        if (mCurrentStatus == Status.CLOSE){
+            rotateCButton(findViewById(R.id.img),0f,45f,600);
+        }else{
+            rotateCButton(findViewById(R.id.img),45f,0f,600);
+        }
         magicBezierCircle = (MagicBezierCircle)findViewById(R.id.bezier);
         magicBezierCircle.mCurrTime = 0;  //点击的时候刷新
         magicBezierCircle.invalidate();

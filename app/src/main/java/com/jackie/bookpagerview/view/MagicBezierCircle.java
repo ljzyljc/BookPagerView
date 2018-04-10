@@ -1,8 +1,11 @@
 package com.jackie.bookpagerview.view;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -10,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+
+import com.jackie.bookpagerview.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +37,9 @@ public class MagicBezierCircle extends View {
     private float mStretchDistance = mRadious/2;
     private List<PointF> mPointDatas; //放置四个数据点的集合
     private List<PointF> mPointControlls;//放置8个控制点的集合
-
-
+    Matrix matrix;
+    private Bitmap bitmap;
+    private Paint mBitmapPaint;
     public MagicBezierCircle(Context context) {
         super(context);
         init();
@@ -56,6 +62,8 @@ public class MagicBezierCircle extends View {
         mPaint.setStrokeWidth(5);
         mPaint.setAntiAlias(true);
         mPath = new Path();
+
+
     }
 
     @Override
@@ -65,7 +73,7 @@ public class MagicBezierCircle extends View {
         mHeight = getHeight();
         mCenterX = mWidth/2;
         mCenterY = mHeight/2;
-        mRadious = 60;
+        mRadious = 50;
         mMagicDistance = mRadious*blackMagic;
         mStretchDistance = mRadious/2;
         initData();
@@ -119,60 +127,77 @@ public class MagicBezierCircle extends View {
         }
 
         canvas.drawPath(mPath,mPaint);
+//        canvas.drawBitmap(bitmap,mCenterX-bitmap.getWidth()/2,mCenterY-bitmap.getHeight()/2,mBitmapPaint);
 
         mCurrTime += 20;
-        //A弹出
-        if (mCurrTime <= mDuration/34*7){   //0-75
-            mPointDatas.get(0).y -= aTop/mCount;
 
-            mPointControlls.get(0).x += aTotal/mCount;
+        if (mCurrTime <= mDuration/140 * 18){   //0-75      //A弹出
+            mPointDatas.get(0).y -= 1*aTop/mCount;
+            mPointControlls.get(0).x += 1*aTotal/mCount;
+            mPointControlls.get(7).x -= 1*bTotal/mCount;
+
             postInvalidateDelayed((long) mPiece);
             Log.i(TAG, "onDraw: -----1----"+mCurrTime+"-------"+mDuration);
-        }else if (mCurrTime> mDuration/6 && mCurrTime <= mDuration/3){    //50-100   A收回
-            mPointDatas.get(0).y -= aTop/mCount;
-            mPointControlls.get(0).x += aTotal/mCount;
+        }else if (mCurrTime> mDuration/140 * 18 && mCurrTime <= mDuration/140 * 36){    //75-150   A收回
+            mPointDatas.get(0).y += 1*aTop/mCount;
+            mPointControlls.get(0).x -= 1*aTotal/mCount;
+            mPointControlls.get(7).x += 1*bTotal/mCount;
+            Log.i(TAG, "onDraw: -----2----"+mCurrTime+"-------"+mDuration);
+            postInvalidateDelayed((long) mPiece);
+        }else if (mCurrTime> mDuration/140 * 36 && mCurrTime <= mDuration/140 * 54){    //150 - 225 B弹出
+            //修正A
+            mPointDatas.get(0).y = mCenterY - mRadious;
+            mPointControlls.get(0).x = mCenterX + mMagicDistance;
+            mPointControlls.get(7).x = mCenterX - mMagicDistance;
 
             //B
-            mPointControlls.get(6).y -= bTotal/mCount;
-            mPointControlls.get(7).x -= bTotal/mCount;
-
-                postInvalidateDelayed((long) mPiece);
-        }else if (mCurrTime> mDuration/3 && mCurrTime <= mDuration/2){    //100-150  A收回，B弹出，C弹出
-            mPointDatas.get(0).y += aTop/mCount;
-            mPointControlls.get(0).x -= aTotal/mCount;
-
-            mPointDatas.get(3).x -= lTop/mCount;
-
-
-            mPointControlls.get(5).y += cBottom/mCount;
-            //B
-            mPointControlls.get(6).y -= bTotal/mCount;
-            mPointControlls.get(7).x -= bTotal/mCount;
+            mPointDatas.get(0).y -= 1*aTop/mCount;
+            mPointControlls.get(0).x += 0.5*aTotal/mCount;
+            mPointControlls.get(6).y -= 1*bTotal/mCount;
+            mPointControlls.get(7).x -= 1*bTotal/mCount;
 
             postInvalidateDelayed((long) mPiece);
-        }else if (mCurrTime> mDuration/2 && mCurrTime <= mDuration/3 * 2){ //150-200 A收回，B收回，C弹出
-            mPointDatas.get(0).y += aTop/mCount;
-            mPointControlls.get(0).x -= aTotal/mCount;
+        }else if (mCurrTime> mDuration/140 * 54 && mCurrTime <= mDuration/140 * 72){ //225 - 300 B收回
 
-            mPointDatas.get(3).x -= lTop/mCount;
-
-            mPointControlls.get(5).y += cBottom/mCount;
             //B
-            mPointControlls.get(6).y += bTotal/mCount;
-            mPointControlls.get(7).x += bTotal/mCount;
+            mPointDatas.get(0).y += 1*aTop/mCount;
+            mPointControlls.get(0).x -= 0.5*aTotal/mCount;
+            mPointControlls.get(6).y += 1*bTotal/mCount;
+            mPointControlls.get(7).x += 1*bTotal/mCount;
 
             postInvalidateDelayed((long) mPiece);
-        }else if (mCurrTime> mDuration/3 * 2 && mCurrTime <= mDuration/6 * 5) { //200-250 B收回，C收回
-            mPointDatas.get(3).x += lTop/mCount;
+        }else if (mCurrTime> mDuration/140 * 72 && mCurrTime <= mDuration/140*108) { //300-500 C变大---变小
+            //修正B
+            mPointDatas.get(0).y = mCenterY - mRadious;
+            mPointControlls.get(0).x = mCenterX + mMagicDistance;
+            mPointControlls.get(6).y = mCenterY - mMagicDistance;
+            mPointControlls.get(7).x = mCenterX - mMagicDistance;
+            if (mCurrTime> mDuration/140 * 90 && mCurrTime <= mDuration/140 * 108){
+                mPointDatas.get(3).x -= bei*lTop/mCount;  //变大
+                mPointControlls.get(5).y += 1*cBottom/mCount;
+                mPointControlls.get(7).x -= 1*bTotal/mCount;
+            }else{
+                mPointDatas.get(3).x += bei*lTop/mCount;  //变小
+                mPointControlls.get(5).y -= 1*cBottom/mCount;
+                mPointControlls.get(7).x += 1*bTotal/mCount;
+            }
 
-            mPointControlls.get(5).y -= cBottom/mCount;
+
+//            mPointControlls.get(5).y -= cBottom/mCount;
             //B
-            mPointControlls.get(6).y += bTotal/mCount;
-            mPointControlls.get(7).x += bTotal/mCount;
+//            mPointControlls.get(6).y += bTotal/mCount;
+//            mPointControlls.get(7).x += bTotal/mCount;
             postInvalidateDelayed((long) mPiece);
-        }else if (mCurrTime> mDuration/6 * 5 && mCurrTime <= mDuration){        //250-300 C收回
-            mPointDatas.get(3).x += lTop/mCount;
-            mPointControlls.get(5).y -= cBottom/mCount;
+        }else if (mCurrTime> mDuration/140 * 108 && mCurrTime <= mDuration){        //500-700 C收回
+            if (mCurrTime> mDuration/140 * 108 && mCurrTime <= mDuration/140 * 124){
+                mPointDatas.get(3).x -= bei*lTop/mCount;  //变大
+                mPointControlls.get(5).y += 1*cBottom/mCount;
+                mPointControlls.get(7).x -= 1*bTotal/mCount;
+            }else{
+                mPointDatas.get(3).x += bei*lTop/mCount;  //变小
+                mPointControlls.get(5).y -= 1*cBottom/mCount;
+                mPointControlls.get(7).x += 1*bTotal/mCount;
+            }
             postInvalidateDelayed((long) mPiece);
         }else{
             //最后修正值，因为每次除存在误差
@@ -186,14 +211,14 @@ public class MagicBezierCircle extends View {
         }
 
     }
-
+    private float bei = 0.6f;
     private float cBottom = 200;
     private float aTop = 80;
     private float lTop = 70;
     private float aTotal = 200;
     private float bTotal = 200;
 
-    private int mDuration = 600;
+    private int mDuration = 1400;
     public int mCurrTime = 0;  //当前已进行时间
     private float mCount = 100f;//将总时间划分多少块
     private float mPiece = mDuration / mCount; //每一块的时间 ；
