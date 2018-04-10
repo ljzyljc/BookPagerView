@@ -10,25 +10,25 @@
         android:text="点击"
         android:layout_height="wrap_content" />
     <com.jackie.bookpagerview.view.SatelliteMenu
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="200dp"
+        android:layout_gravity="bottom|right"
+        android:layout_height="200dp"
         jackie:position="left_bottom"
-        jackie:staellite_radius="130dp">
+        jackie:staellite_radius="110dp">
         <RelativeLayout
 
             android:layout_width="wrap_content"
             android:gravity="right|bottom"
-
             android:layout_height="wrap_content">
             <com.jackie.bookpagerview.view.MagicBezierCircle
                 android:id="@+id/bezier"
                 android:layout_gravity="bottom|right"
-                android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_width="70dp"
+                android:layout_height="70dp" />
             <ImageView
                 android:id="@+id/img"
                 android:layout_centerInParent="true"
-                android:background="@mipmap/add_menu1"
+                android:background="@mipmap/add9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RelativeLayout>
@@ -47,19 +47,19 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/composer_music"
+            android:src="@mipmap/three3"
             android:tag="Camera"
             />
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/composer_place"
+            android:src="@mipmap/two"
             android:tag="Place"
             />
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/composer_sleep"
+            android:src="@mipmap/four"
             android:tag="Sleep"
             />
         <!--<ImageView-->

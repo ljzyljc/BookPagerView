@@ -9,6 +9,9 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Xfermode;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -40,21 +43,23 @@ public class MagicBezierCircle extends View {
     Matrix matrix;
     private Bitmap bitmap;
     private Paint mBitmapPaint;
+    private Context context;
     public MagicBezierCircle(Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public MagicBezierCircle(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     public MagicBezierCircle(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(context);
     }
-    private void init(){
+    private void init(Context context){
+        this.context = context;
         mPaint = new Paint();
         mPaint.setColor(Color.parseColor("#FF8E8F"));
 //        mPaint.setStyle(Paint.Style.STROKE);
@@ -62,6 +67,7 @@ public class MagicBezierCircle extends View {
         mPaint.setStrokeWidth(5);
         mPaint.setAntiAlias(true);
         mPath = new Path();
+//        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OVER));
 
 
     }
@@ -73,7 +79,7 @@ public class MagicBezierCircle extends View {
         mHeight = getHeight();
         mCenterX = mWidth/2;
         mCenterY = mHeight/2;
-        mRadious = 50;
+        mRadious = dip2px(context,30);
         mMagicDistance = mRadious*blackMagic;
         mStretchDistance = mRadious/2;
         initData();
@@ -224,4 +230,9 @@ public class MagicBezierCircle extends View {
     private float mPiece = mDuration / mCount; //每一块的时间 ；
     private static final String TAG = "MagicBezierCircle";
 
+
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
 }

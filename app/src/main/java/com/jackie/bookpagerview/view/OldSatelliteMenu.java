@@ -2,8 +2,6 @@ package com.jackie.bookpagerview.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -18,13 +16,11 @@ import android.view.animation.TranslateAnimation;
 
 import com.jackie.bookpagerview.R;
 
-import java.lang.reflect.TypeVariable;
-
 /**
  * Created by Jackie on 2018/4/8.
  */
 
-public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
+public class OldSatelliteMenu extends ViewGroup implements View.OnClickListener{
     private static final String TAG = "SatelliteMenu";
     private Position mPosition = Position.RIGHT_BOTTOM;   //菜单的位置，枚举类
     private int mRadious;
@@ -35,10 +31,10 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
 
 
     public interface  onMenuItemClickListener{
-        void onClick(View view,int pos);
+        void onClick(View view, int pos);
     }
 
-    public void setOnMenuItemClickListener(SatelliteMenu.onMenuItemClickListener onMenuItemClickListener) {
+    public void setOnMenuItemClickListener(OldSatelliteMenu.onMenuItemClickListener onMenuItemClickListener) {
         this.onMenuItemClickListener = onMenuItemClickListener;
     }
 
@@ -48,15 +44,15 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
     public enum Position{
         LEFT_TOP,LEFT_BOTTOM,RIGHT_TOP,RIGHT_BOTTOM;
     }
-    public SatelliteMenu(Context context) {
+    public OldSatelliteMenu(Context context) {
         this(context, null);
     }
 
-    public SatelliteMenu(Context context, AttributeSet attrs) {
+    public OldSatelliteMenu(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SatelliteMenu(Context context, AttributeSet attrs, int defStyleAttr) {
+    public OldSatelliteMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         //半径默认值是100
         mRadious = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,100,
@@ -93,7 +89,6 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         if (changed){
@@ -115,18 +110,9 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
                 if (mPosition == Position.RIGHT_TOP || mPosition == Position.RIGHT_BOTTOM){
                     cl = getMeasuredWidth() - cWith - cl;
                 }
-//                if (i==2){   //最左侧
-                    cl = cl-30;
-                    ct = ct-30;
-//                }
-//                if (i==3){
-//                    cl = cl-30;
-//                    ct = ct-30;
-//                }
 
-                Log.i(TAG, "onLayout: ----左侧点："+cl+"----右侧点："+ct);
+
                 child.layout(cl,ct,cl+cWith,ct+cHeight);
-                child.setZ(0.0f);
             }
 
         }
@@ -160,28 +146,22 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
         }
 
         mCButton.layout(l,t,l+width,t+width);
-//        mCButton.bringToFront();
+
 
     }
     private MagicBezierCircle magicBezierCircle;
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onClick(View v) {
         //主按钮旋转
-
-            if (mCurrentStatus == Status.CLOSE) {
-                rotateCButton(findViewById(R.id.img), 0f, 45f, 600);
-            } else {
-                rotateCButton(findViewById(R.id.img), 45f, 0f, 600);
-            }
-            magicBezierCircle = (MagicBezierCircle) findViewById(R.id.bezier);
-            mCButton.setZ(100.0f);
-        //主按钮刷新
-        toggleMenu(240);
-        if (isFastClick()) {
-            magicBezierCircle.mCurrTime = 0;  //点击的时候刷新
-            magicBezierCircle.invalidate();
+        if (mCurrentStatus == Status.CLOSE){
+            rotateCButton(findViewById(R.id.img),0f,45f,600);
+        }else{
+            rotateCButton(findViewById(R.id.img),45f,0f,600);
         }
+        magicBezierCircle = (MagicBezierCircle)findViewById(R.id.bezier);
+        magicBezierCircle.mCurrTime = 0;  //点击的时候刷新
+        magicBezierCircle.invalidate();
+        toggleMenu(600);
     }
     //切换菜单
     public void toggleMenu(int duration){
@@ -196,10 +176,10 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
             int ct = (int)(mRadious * Math.cos(Math.PI/2 /(count-2)*i));
             int xflag =1;
             int yflag =1;
-            if (mPosition == Position.LEFT_TOP || mPosition ==Position.LEFT_BOTTOM){
+            if (mPosition == Position.LEFT_TOP || mPosition == Position.LEFT_BOTTOM){
                 xflag = -1;
             }
-            if (mPosition ==Position.LEFT_TOP || mPosition ==Position.RIGHT_TOP){
+            if (mPosition == Position.LEFT_TOP || mPosition == Position.RIGHT_TOP){
                 yflag = -1;
             }
 
@@ -220,7 +200,7 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
             }
             transAnim.setFillAfter(true);
             transAnim.setDuration(duration);
-            transAnim.setStartOffset(200*i);  //动画执行前的等待时间
+            transAnim.setStartOffset(i*100/getChildCount());
             transAnim.setAnimationListener(new Animation.AnimationListener() {
                 @Override
                 public void onAnimationStart(Animation animation) {
@@ -241,12 +221,12 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
             });
 
             //旋转动画
-//            RotateAnimation rotateAnim = new RotateAnimation(0,720,
-//                    Animation.RELATIVE_TO_SELF,0.5f,
-//                    Animation.RELATIVE_TO_SELF,0.5f);
-//            rotateAnim.setDuration(duration);
-//            rotateAnim.setFillAfter(true);
-//            animset.addAnimation(rotateAnim);
+            RotateAnimation rotateAnim = new RotateAnimation(0,720,
+                    Animation.RELATIVE_TO_SELF,0.5f,
+                    Animation.RELATIVE_TO_SELF,0.5f);
+            rotateAnim.setDuration(duration);
+            rotateAnim.setFillAfter(true);
+            animset.addAnimation(rotateAnim);
             animset.addAnimation(transAnim);
             childView.startAnimation(animset);
             final int finalI = i+1;
@@ -316,7 +296,6 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
         return animationSet;
     }
 
-    //主按钮旋转
     private void rotateCButton(View v,float start,float end,int durtion){
         RotateAnimation anim = new RotateAnimation(start,end,
                 Animation.RELATIVE_TO_SELF,0.5f,
@@ -325,18 +304,5 @@ public class SatelliteMenu extends ViewGroup implements View.OnClickListener{
         anim.setFillAfter(true);
         v.startAnimation(anim);
 
-    }
-    private final int MIN_CLICK_DELAY_TIME = 1400;
-    private long lastClickTime;
-
-    public boolean isFastClick() {
-        boolean flag = false;
-        long curClickTime = System.currentTimeMillis();
-        if ((curClickTime - lastClickTime) >= MIN_CLICK_DELAY_TIME) {
-            flag = true;
-        }
-        lastClickTime = curClickTime;
-        Log.i(TAG, "isFastClick: -----"+flag);
-        return flag;
     }
 }
