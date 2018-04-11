@@ -37,11 +37,11 @@ public class WeatherGlassView extends View {
     }
     private void init(Context context){
         mPinkPaint = new Paint();
-        mPinkPaint.setStyle(Paint.Style.FILL);//设置画圆弧的画笔的属性为描边(空心)，个人喜欢叫它描边，叫空心有点会引起歧义
-        mPinkPaint.setStrokeWidth(10);
-        mPinkPaint.setColor(Color.CYAN);
+        mPinkPaint.setStyle(Paint.Style.STROKE);//设置画圆弧的画笔的属性为描边(空心)，个人喜欢叫它描边，叫空心有点会引起歧义
+        mPinkPaint.setStrokeWidth(8);
+        mPinkPaint.setColor(Color.parseColor("#E41172"));
         mLinePaint = new Paint();
-        mLinePaint.setColor(Color.RED);
+        mLinePaint.setColor(Color.parseColor("#E41172"));
         mLinePaint.setStyle(Paint.Style.STROKE);
 
     }
@@ -51,7 +51,7 @@ public class WeatherGlassView extends View {
         super.onLayout(changed, left, top, right, bottom);
         mWidth = getWidth();
         mHeight = getHeight();
-
+        mOutRadious = (mWidth/10*7)/2;  //(宽度的五分之三)/2
 
 
 
@@ -66,15 +66,40 @@ public class WeatherGlassView extends View {
     //绘制外部粉红色温度体,圆弧
     private void drawOutSidePink(Canvas canvas){
         float x = 0;
-        float y = mHeight/2;
-        RectF rectF = new RectF(x,y,getWidth()-x,getHeight());
-        canvas.drawArc(rectF,0,140,false,mPinkPaint);
-        canvas.drawRect(rectF,mLinePaint);
+        float y = mHeight/20f * 12.5f;
+        RectF rectF = new RectF((float) (mWidth/10f*1.5),y, (float) (mWidth/10*1.5+mWidth/10*7),y+mWidth/10*7);
+        canvas.drawArc(rectF,-60,300,false,mPinkPaint);
+        canvas.drawLine(
+                (float) ((mWidth/10f*1.5)+(mOutRadious-Math.cos(Math.PI/3)*mOutRadious)),
+                y+(mOutRadious -(float) (Math.sin(Math.PI/3)*mOutRadious)+3),
+                (float) ((mWidth/10f*1.5)+(mOutRadious-Math.cos(Math.PI/3)*mOutRadious)),
+                mHeight/9,
+                mPinkPaint);
+        canvas.drawLine(
+                (float) ((mWidth/10f*1.5)+(mOutRadious+Math.cos(Math.PI/3)*mOutRadious)),
+                y+(mOutRadious -(float) (Math.sin(Math.PI/3)*mOutRadious)+3),
+                (float) ((mWidth/10f*1.5)+(mOutRadious+Math.cos(Math.PI/3)*mOutRadious)),
+                mHeight/9,
+                mPinkPaint);
+        RectF topRectF = new RectF(
+                (float) ((mWidth/10f*1.5)+(mOutRadious-Math.cos(Math.PI/3)*mOutRadious)-1),
+                10,
+                (float) ((mWidth/10f*1.5)+(mOutRadious+Math.cos(Math.PI/3)*mOutRadious)+1),
+                mHeight/9*2);
+        canvas.drawArc(topRectF,180,180,false,mPinkPaint);
+
+
+        //绘制边框
+        RectF rectF1 = new RectF(x,y,getWidth()-1,getHeight()-1);
+        canvas.drawRect(rectF1,mLinePaint);
     }
 
     //绘制内部粉红色
     private void drawInnerPink(Canvas canvas){
-
+        float x = 0;
+        float y = mHeight/3 * 2;
+        RectF rectF = new RectF(mWidth/4,y,mWidth/5+mWidth/5*3,y+mWidth/5*3);
+        canvas.drawArc(rectF,-60,300,false,mPinkPaint);
     }
     //绘制两边的线
     private void drawDoubleSideLine(Canvas canvas){
