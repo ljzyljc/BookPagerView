@@ -43,7 +43,7 @@ public class WeatherGlassView extends View {
     private Bitmap bitmap1;
     private Bitmap bitmap2;
     private Paint mBitmapPaint;
-
+    private Paint mWavePaint;
 
     public WeatherGlassView(Context context) {
         super(context);
@@ -82,6 +82,9 @@ public class WeatherGlassView extends View {
         mDoubleLinePaint.setColor(Color.parseColor("#E41172"));
         mDoubleLinePaint.setAntiAlias(true);
         mBitmapPaint = new Paint();
+        mWavePaint = new Paint();
+        mWavePaint.setColor(Color.parseColor("#E41172"));
+        mWavePaint.setStyle(Paint.Style.FILL);
         bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.love1);
         bitmap1 = BitmapFactory.decodeResource(getResources(), R.mipmap.love);
         bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.love4);
