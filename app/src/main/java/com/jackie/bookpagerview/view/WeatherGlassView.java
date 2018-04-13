@@ -258,5 +258,11 @@ public class WeatherGlassView extends View {
 //    }
 
 
-
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        if (handler!=null){
+            handler.removeCallbacksAndMessages(null);
+        }
+    }
 }
