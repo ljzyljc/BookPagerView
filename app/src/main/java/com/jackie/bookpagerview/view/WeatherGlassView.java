@@ -15,6 +15,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -44,6 +46,7 @@ public class WeatherGlassView extends View {
     private Bitmap bitmap2;
     private Paint mBitmapPaint;
     private Paint mWavePaint;
+    private Paint mInnerWavePaint;
 
     public WeatherGlassView(Context context) {
         super(context);
@@ -88,6 +91,11 @@ public class WeatherGlassView extends View {
         bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.love1);
         bitmap1 = BitmapFactory.decodeResource(getResources(), R.mipmap.love);
         bitmap2 = BitmapFactory.decodeResource(getResources(), R.mipmap.love4);
+        mInnerWavePaint = new Paint();
+        mInnerWavePaint.setStrokeWidth(1);
+        mInnerWavePaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        mInnerWavePaint.setColor(Color.parseColor("#E41172"));
+        mInnerWavePaint.setAntiAlias(true);
     }
 
     @Override
@@ -106,8 +114,8 @@ public class WeatherGlassView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawOutSidePink(canvas);
-        drawInnerPink(canvas);
         drawDoubleSideLine(canvas);
+        drawInnerPink(canvas);
     }
 
     //绘制外部粉红色温度体,圆弧
@@ -144,21 +152,68 @@ public class WeatherGlassView extends View {
 //        canvas.drawRect(rectF1,mLinePaint);
     }
 
+    private float addCount = 10;
     //绘制内部粉红色
     private void drawInnerPink(Canvas canvas){
+        mInnerRectPath.reset();
         float x = mWidth/2;
         float y = (float) (mHeight/20f * 12.5 + mWidth/10*7/2);  //内圆的Y坐标
 
         canvas.drawCircle(x,y,mInnerRadiou,mInnerCirclePaint);
-        RectF rectF = new RectF(
-                (float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou),
-                y-mHeight/5*3,
-                (float) (x + Math.cos(Math.PI/2.7)*mInnerRadiou),
-                y);
-        Log.i("jc", "drawInnerPink: -------"+"top:"+(y-mHeight/5*3)+"bottom"+y);
-        canvas.drawRect(rectF,mInnerCirclePaint);
+        mInnerRectPath.moveTo((float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou),y);  //左下
+        mInnerRectPath.lineTo((float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou),y-mHeight/5*3); //左上
+        //设置两个一阶贝塞尔曲线
+        //控制点的x,y
+        float firstControlX = (float) ((float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou) + ((float) x -(x - Math.cos(Math.PI/2.7)*mInnerRadiou))/2);
+        float firstControlY = y-mHeight/5*3+addCount;
+
+        float secondControlX = (float) (x + ((float) x -(x - Math.cos(Math.PI/2.7)*mInnerRadiou))/2);
+        float secondControlY = y-mHeight/5*3-addCount;
+
+        mInnerRectPath.quadTo(firstControlX,firstControlY,x,y-mHeight/5*3);
+        mInnerRectPath.lineTo(x,y-mHeight/5*3);
+//
+        mInnerRectPath.quadTo(secondControlX,secondControlY,(float) (x + Math.cos(Math.PI/2.7)*mInnerRadiou),y-mHeight/5*3);
+        mInnerRectPath.lineTo((float) (x + Math.cos(Math.PI/2.7)*mInnerRadiou),y-mHeight/5*3);
+        mInnerRectPath.lineTo((float) (x + Math.cos(Math.PI/2.7)*mInnerRadiou),y);
+        mInnerRectPath.lineTo((float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou),y);
+//        RectF rectF = new RectF(
+//                (float) (x - Math.cos(Math.PI/2.7)*mInnerRadiou),  //左
+//                y-mHeight/5*3,                                     //上
+//                (float) (x + Math.cos(Math.PI/2.7)*mInnerRadiou),  //右
+//                y);                                                //下
+//        Log.i("jc", "drawInnerPink: -------"+"top:"+(y-mHeight/5*3)+"bottom"+y);
+//        canvas.drawRect(rectF,mInnerCirclePaint);
+        canvas.drawPath(mInnerRectPath,mInnerWavePaint);
+        handler.sendEmptyMessageDelayed(0x123,10);
 
     }
+    private boolean isAdd = true;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            handler.removeCallbacksAndMessages(null);
+            Log.i("jackie", "handleMessage: -------");
+            if (isAdd){
+                if (addCount == 10){
+                    isAdd = false;
+                    addCount --;
+                }
+                if (isAdd){
+                    addCount ++;
+                }
+            }else{
+                if (addCount == -10){
+                    isAdd = true;
+                    addCount ++;
+                }
+                if (!isAdd){
+                    addCount --;
+                }
+            }
+            postInvalidate();
+        }
+    };
     //绘制两边的线
     private void drawDoubleSideLine(Canvas canvas){
         //最低点
