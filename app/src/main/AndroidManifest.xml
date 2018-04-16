@@ -65,7 +65,7 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".WeatherGlassActivity">
+        <activity android:name=".DragLayoutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
