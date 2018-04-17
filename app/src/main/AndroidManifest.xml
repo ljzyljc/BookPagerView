@@ -65,7 +65,7 @@
         android:supportsRtl="true"
         android:hardwareAccelerated="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".DragLayoutActivity">
+        <activity android:name=".left_right_menu.SimpleSlidingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
