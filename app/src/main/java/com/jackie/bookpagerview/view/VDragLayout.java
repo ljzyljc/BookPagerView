@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
  */
 
 public class VDragLayout extends LinearLayout {
+    private static final String TAG = "VDragLayout";
     private ViewDragHelper viewDragHelper;
     private View mDragView;
     private View mAutoBackView;
@@ -58,6 +60,7 @@ public class VDragLayout extends LinearLayout {
 
             @Override
             public void onEdgeDragStarted(int edgeFlags, int pointerId) {
+                //捕获那个想要移动的view
                 viewDragHelper.captureChildView(mEdgeTrackerView,pointerId);
             }
         });
@@ -71,11 +74,13 @@ public class VDragLayout extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.i(TAG, "onInterceptTouchEvent: ");
         return viewDragHelper.shouldInterceptTouchEvent(ev);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.i(TAG, "onTouchEvent: -----------");
         viewDragHelper.processTouchEvent(event);
         return true;
     }

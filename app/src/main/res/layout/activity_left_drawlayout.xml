@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jackie.bookpagerview.view.LeftDrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/left_drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!--       content         -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/content_txt"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:textSize="40sp"
+            android:text="First"
+            android:layout_centerInParent="true"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <!--       menu            -->
+    <FrameLayout
+        android:id="@+id/container_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</com.jackie.bookpagerview.view.LeftDrawerLayout>
