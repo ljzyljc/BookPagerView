@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 <com.jackie.bookpagerview.view.DragListView
     android:id="@+id/mDragListView"
-    android:background="#CCCCCC"
+    android:background="#d8d5d5"
     android:layout_width="match_parent"
     android:layout_height="match_parent"></com.jackie.bookpagerview.view.DragListView>
 </LinearLayout>

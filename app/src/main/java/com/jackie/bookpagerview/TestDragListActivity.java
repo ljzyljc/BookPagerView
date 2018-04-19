@@ -23,7 +23,7 @@ public class TestDragListActivity extends BaseActivity {
         setContentView(R.layout.activity_test_drag);
         mList = new ArrayList<>();
         mDragListView = findViewById(R.id.mDragListView);
-        for (int i=0;i<10;i++){
+        for (int i=0;i<20;i++){
             mList.add("当前选项是："+i);
         }
         adapter = new ArrayAdapter(this,R.layout.item_adapter_draglist,mList);
@@ -44,6 +44,7 @@ public class TestDragListActivity extends BaseActivity {
                         Collections.swap(mList,i,i-1);
                     }
                 }
+                adapter.notifyDataSetChanged();
             }
 
             @Override
