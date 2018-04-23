@@ -74,18 +74,18 @@ public class DragListView extends ListView {
     private Runnable mScrollRunnable = new Runnable() {
         @Override
         public void run() {
-            int scrollY = 0;
-               if (mDownY > mUpBorder){   //手指在最下面的时候，开始向上滑动
+            int scrollY;
+               if (mMoveY > mUpBorder){   //手指在最下面的时候，开始向上滑动
                    scrollY = 20;
                    handler.postDelayed(mScrollRunnable,25);
-               }else if (mDownY < mDonwBorder){ //手指在最上面的时候向下滚动
+               }else if (mMoveY < mDonwBorder){ //手指在最上面的时候向下滚动
                    scrollY = -20;
                    handler.postDelayed(mScrollRunnable,25);
                }else{
                    scrollY = 0;
                    handler.removeCallbacks(mScrollRunnable);
                }
-               onSwapItem(mDownX,mDownY);
+               onSwapItem(mMoveX,mMoveY);
                smoothScrollBy(scrollY,10);
         }
     };
@@ -105,8 +105,8 @@ public class DragListView extends ListView {
                         mStartDragItemView.setDrawingCacheEnabled(true);
                         mDragBitmap = Bitmap.createBitmap(mStartDragItemView.getDrawingCache());
                         mStartDragItemView.destroyDrawingCache();
-                        mUpBorder = mHeight / 4 * 3;
-                        mDonwBorder = mHeight / 4 * 1;
+                        mUpBorder = getHeight() * 3 / 4;
+                        mDonwBorder = getHeight() / 4;
                     }
                 }
                 break;
@@ -122,6 +122,8 @@ public class DragListView extends ListView {
     }
 
     boolean isFirstMove = true;
+    private int mMoveX;
+    private int mMoveY;
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (isDrag && mDragView!=null) {
@@ -145,6 +147,8 @@ public class DragListView extends ListView {
 //
 //                    break;
                 case MotionEvent.ACTION_MOVE:
+                    mMoveX = (int) ev.getX();
+                    mMoveY = (int) ev.getY();
                     Log.i(TAG, "onTouchEvent: ===============");
                     if (isFirstMove && mStartDragItemView != null) {
                         Log.i(TAG, "onTouchEvent: --------invisivle");
@@ -153,7 +157,7 @@ public class DragListView extends ListView {
                     }
                     //拖动镜像
                     if (mStartDragItemView != null) {
-                        onDragItem((int) ev.getX(), (int) ev.getY());
+                        onDragItem(mMoveX, mMoveY);
                     }
                     break;
                 case MotionEvent.ACTION_UP:
