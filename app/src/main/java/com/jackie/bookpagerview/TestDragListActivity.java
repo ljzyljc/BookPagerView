@@ -2,6 +2,7 @@ package com.jackie.bookpagerview;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ArrayAdapter;
 
 import com.jackie.bookpagerview.view.DragListView;
@@ -28,6 +29,12 @@ public class TestDragListActivity extends BaseActivity {
         }
         adapter = new ArrayAdapter(this,R.layout.item_adapter_draglist,mList);
         mDragListView.setAdapter(adapter);
+        mDragListView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         mDragListView.setOnChangeListener(new DragListView.OnChangeListener() {
             @Override
             public void onChange(int from, int to) {
