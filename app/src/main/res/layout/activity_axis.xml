@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#ffffff"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.jackie.bookpagerview.view.StrategyAxisView
+        android:id="@+id/strategy_axis_view"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#f9f9f9"
+        />
+</LinearLayout>
