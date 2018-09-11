@@ -10,6 +10,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathMeasure;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -170,11 +172,16 @@ public class StrategyAxisView extends View {
         mPathPaint.setStrokeJoin(Paint.Join.ROUND);
         mPathPaint.setStrokeCap(Paint.Cap.ROUND);
         mPathPaint.setColor(Color.parseColor("#3acfd5"));
-        mPathPaint.setStyle(Paint.Style.STROKE);
+        mPathPaint.setStyle(Paint.Style.FILL);
         mPathPaint.setStrokeWidth(getResources().getDimension(R.dimen.x3));
+        //FIXME：设置线的被遮挡时显示
+        mPathPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DARKEN));
         setLayerType(LAYER_TYPE_SOFTWARE, null);
         pathLine = new Path();
-
+        mBackLinePaint = new Paint();
+        mBackLinePaint.setColor(Color.GRAY);
+        mBackLinePaint.setAntiAlias(true);
+//        mBackLinePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.ADD));
     }
     private Path pathLine;
 
@@ -183,6 +190,7 @@ public class StrategyAxisView extends View {
     float endX = 0;
     float endY = 0;
     private float value = 0;
+    private Paint mBackLinePaint;
 
     public void setValue(float value) {
         this.value = value;
@@ -192,6 +200,7 @@ public class StrategyAxisView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Log.i(TAG, "onDraw: ------------");
+        canvas.drawLine(0,mHeight/2,mWidth,mHeight/2,mBackLinePaint);
         //绘制线和圆点
 //        pathLine.reset();   //必须重置才有效果，否则之前在都在
 //        pathLine.moveTo(0, mHeight);
@@ -253,7 +262,9 @@ public class StrategyAxisView extends View {
         }
         PointF lastPoint = mmP.get(mmP.size()-1);
         pathBlueLine.setLastPoint(lastPoint.x,mHeight);
-
+        pathBlueLine.close();
+        mPathPaint.setShader(mShader);
+//        mPathPaint.setAlpha(255);
         canvas.drawPath(pathBlueLine,mPathPaint);
 //        //FIXME:背景 path进行裁剪
 //        PathMeasure pathMeasure=new PathMeasure();
